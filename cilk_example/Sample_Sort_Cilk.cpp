@@ -9,6 +9,8 @@
 #include <cmath>
 #include <vector>
 #include <algorithm>
+#include <random>
+#include <string>
 using namespace std;
 #define THRESHOLD_OF_TRANSPOSE 100
 #define THRESHOLD_OF_DISTRIBUTION 100
