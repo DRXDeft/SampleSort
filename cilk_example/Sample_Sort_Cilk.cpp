@@ -150,7 +150,7 @@ void Sample_Sort(int* A, int* B, int* C, int* D, int n){
     for (int i = 0, j=0; j<buckets-1;  j++,i+=bucket_quotient * logn)
         Sample[j] = Pick[i];
     Sample[buckets - 1] = INT_MAX;      //for (int i = 0; i < buckets; i++) cout<< Sample[i]<<" "; cout<<"\n";
-    cout<<"???"<<endl;
+    cout<<"step3"<<endl;
     //-----------------Step 3--------------------
         //First, get the count for each subarray in each bucket. I store them in C
     for (int i = 0; i < buckets; i++){
@@ -161,20 +161,20 @@ void Sample_Sort(int* A, int* B, int* C, int* D, int n){
             Merge(A+i*bucket_size, bucket_size ,C+i*buckets,buckets);
         //for (int j = i;j<i+buckets;j++) cout<<C[j]<<" "; cout<<"\n";
     }
-    cout<<"????"<<endl;
+    cout<<"step4.0"<<endl;
     for (int i = 0; i<buckets*buckets;i++) D[i] = C[i];
-    cout<<"?????"<<endl;
+    cout<<"Transpose"<<endl;
         //Then, transpose the array     
     //for (int i = 0; i < buckets*buckets; i++) if ((i+1)%buckets == 0) cout<< C[i]<<"\n"; else cout<< C[i]<<" "; cout<<"\n";
     Transpose(C,buckets,0,buckets,0,buckets);
-    cout<<"??????"<<endl;
+    cout<<"Compute"<<endl;
     //for (int i = 0; i < buckets*buckets; i++) if ((i+1)%buckets == 0) cout<< C[i]<<"\n"; else cout<< C[i]<<" "; cout<<"\n";
     
         //scan to compute the offsets
     InsertPointer[0] = Offset[0] = 0;
     for (int i = 1; i<buckets; i++)
         InsertPointer[i] = Offset[i] = reduce(C+(i-1)*buckets,buckets)+Offset[i-1];
-    cout<<"??????"<<endl;
+    cout<<"Distribute"<<endl;
     //for (int i = 0; i<buckets; i++) cout<<InsertPointer[i]<<" "; cout<<"\n";
     
         //Lastly, move each element to the corresponding bucket
