@@ -143,8 +143,9 @@ void Sample_Sort(int* A, int* B, int* C, int* D, int n){
     int random_pick = logn * bucket_quotient * buckets;
             //-------Randomly Pick cRootnLogn samples
     cilk_for (int i = 0;i<random_pick;i++)
-        Pick[i] = A[hash32(i)%n];           //for (int i = 0;i<random_pick;i++) cout<<Pick[i]<<" "; cout<<"\n";
-    //sort(Pick, Pick+random_pick);
+        Pick[i] = A[hash32(i)%n]; 
+    cout<<"??\n";          //for (int i = 0;i<random_pick;i++) cout<<Pick[i]<<" "; cout<<"\n";
+    sort(Pick, Pick+random_pick);cout<<"??\n";
             //-------Randomly Pick every cLogn samples
     for (int i = 0, j=0; j<buckets-1;  j++,i+=bucket_quotient * logn)
         Sample[j] = Pick[i];
@@ -201,7 +202,7 @@ int main(int argc, char** argv) {
     int* D = new int[n];
     for (int i = 0; i < n; i++) C[i] = 0;
 	//cilk_for (int i = 0; i < n; i++) A[i] = i;
-    for (int i = 0,j=n; i < n; i++,j--) A[i] = i;
+    for (int i = 0,j=n; i < n; i++,j--) A[i] = j;
     //Verification(A,n);
     cout << "Data Generation is Complete, Start Sorting and Timing!\n";
 	timer t; t.start();
