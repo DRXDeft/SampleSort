@@ -141,7 +141,7 @@ void Sample_Sort(int* A, int* B, int* C, int* D, int n){
     //---------------------Step 2--------------------
     int logn = log2_up(n);
     long long tmp1 = logn * bucket_quotient;
-    cout<<"?-!"<<tmp1<<"\n";
+    cout<<"?-!"<<tmp1<<" "<<buckets<<"\n";
     long long random_pick = tmp1 * ((long long) buckets);
      cout<<"?-"<<random_pick<<"\n";
             //-------Randomly Pick cRootnLogn samples
