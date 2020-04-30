@@ -167,12 +167,14 @@ void Sample_Sort(int* A, int* B, int* C, int* D, int n){
         //Then, transpose the array     
     //for (int i = 0; i < buckets*buckets; i++) if ((i+1)%buckets == 0) cout<< C[i]<<"\n"; else cout<< C[i]<<" "; cout<<"\n";
     Transpose(C,buckets,0,buckets,0,buckets);
+    cout<<"??????"<<endl;
     //for (int i = 0; i < buckets*buckets; i++) if ((i+1)%buckets == 0) cout<< C[i]<<"\n"; else cout<< C[i]<<" "; cout<<"\n";
     
         //scan to compute the offsets
     InsertPointer[0] = Offset[0] = 0;
     for (int i = 1; i<buckets; i++)
         InsertPointer[i] = Offset[i] = reduce(C+(i-1)*buckets,buckets)+Offset[i-1];
+    cout<<"??????"<<endl;
     //for (int i = 0; i<buckets; i++) cout<<InsertPointer[i]<<" "; cout<<"\n";
     
         //Lastly, move each element to the corresponding bucket
@@ -182,6 +184,7 @@ void Sample_Sort(int* A, int* B, int* C, int* D, int n){
         else
             Move(A+i*bucket_size, B, bucket_size, D+i*buckets, buckets);
     }
+    cout<<"???????"<<endl;
     //-----------------Step 4--------------------
     cilk_for (int i = 0; i<buckets; i++){
         if (i == buckets-1)
