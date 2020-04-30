@@ -7,6 +7,7 @@
 #include <cilk/cilk_api.h>
 #include "get_time.h"
 #include <cmath>
+#include <vector>
 #include <algorithm>
 using namespace std;
 #define THRESHOLD_OF_TRANSPOSE 100
@@ -31,6 +32,59 @@ void almostsort(int *A, int n) {
     cilk_for(int i = n / 2; i < n; i++) { A[i] = i + 2; }
     A[n - 1] = n / 2 + 1;
 }
+void fewuniq(int *A, int n) {
+    cilk_for(int i = 0; i < n; i++) { A[i] = (1 + i / (n / 4)) * (n / 4); }
+    for (int i = 0; i < n; i++) {
+        int index = (hash32(i)) % n;
+        int temp = A[i];
+        A[i] = A[index];
+        A[index] = temp;
+    }
+}
+void exp(int *A, int n) {
+    int nrolls = n;  // number of experiments
+    int nstars = n;    // maximum number of stars to distribute
+    const int nintervals = sqrt(n); // number of intervals
+
+    std::default_random_engine generator;
+    std::exponential_distribution<double> distribution(sqrt(n));
+
+    int p[nintervals] = {};
+
+    for (int i = 0; i < nrolls; ++i) {
+        double number = distribution(generator);
+        if (number < 1.0)
+            ++p[int(nintervals * number)];
+    }
+
+	int k = 0;
+    for (int i = 0; i < nintervals; ++i) {
+		for (int j = 0; j< p[i] * nstars / nrolls; j++)
+			A[k++] = i;
+        /*std::cout << float(i) /// nintervals << "-" << float(i + 1) / nintervals
+                  << ": ";
+        std::cout << std::string(p[i] * nstars / nrolls, '*') << std::endl;*/
+    }
+}
+void normal(int *A, int m) {
+    std::default_random_engine e;                   //引擎
+    std::normal_distribution<double> n(m / 2, 1.5); //均值, 方差
+    std::vector<unsigned> vals(m);
+    for (std::size_t i = 0; i != m; ++i) {
+        unsigned v = std::lround(n(e)); //取整-最近的整数
+        if (v < vals.size())
+            ++vals[v];
+    }
+    int k = 0;
+    for (std::size_t j = 0; j != vals.size(); ++j) {
+        for (int i = 0; i < vals[j]; i++)
+            A[k++] = i;
+    }
+    // std::cout << j << " : " << vals[j] << std::string(vals[j], '*') <<
+    // std::endl; int sum = std::accumulate(vals.begin(), vals.end(), 0); cout <<
+    // "sum = " << sum << endl;
+}
+
 void zipfan(int *List, int n) {
     int R = 2000;
     double A = 1.25;
@@ -209,7 +263,12 @@ int main(int argc, char** argv) {
         almostsort(A,n);
     else if (distribution ==3)
         zipfan(A,n);
-    
+    else if (distribution ==4)
+        fewuniq(A,n);
+    else if (distribution ==5)
+        exp(A,n);
+    else if (distribution ==6)
+        normal(A,n);
     for (int i = 0; i < n; i++) C[i] = 0;
 	//cilk_for (int i = 0; i < n; i++) A[i] = i;
     for (int i = 0,j=n; i < n; i++,j--) A[i] = i;
