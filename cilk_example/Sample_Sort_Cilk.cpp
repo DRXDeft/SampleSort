@@ -160,8 +160,8 @@ void Sample_Sort(int* A, int* B, int* C, int* D, int n){
             Merge(A+i*bucket_size, bucket_size ,C+i*buckets,buckets);
         //for (int j = i;j<i+buckets;j++) cout<<C[j]<<" "; cout<<"\n";
     }
-    //for (int i = 0; i<buckets*buckets;i++) D[i] = C[i];
-    memset(D,C,sizeof(D));
+    for (int i = 0; i<buckets*buckets;i++) D[i] = C[i];
+    
         //Then, transpose the array     
     //for (int i = 0; i < buckets*buckets; i++) if ((i+1)%buckets == 0) cout<< C[i]<<"\n"; else cout<< C[i]<<" "; cout<<"\n";
     Transpose(C,buckets,0,buckets,0,buckets);
@@ -174,7 +174,7 @@ void Sample_Sort(int* A, int* B, int* C, int* D, int n){
     //for (int i = 0; i<buckets; i++) cout<<InsertPointer[i]<<" "; cout<<"\n";
     
         //Lastly, move each element to the corresponding bucket
-    for (int i = 0; i<buckets; i++){
+    cilk_for (int i = 0; i<buckets; i++){
         if (i == buckets-1)
             Move(A+i*bucket_size, B, n-i*bucket_size, D+i*buckets, buckets);
         else
