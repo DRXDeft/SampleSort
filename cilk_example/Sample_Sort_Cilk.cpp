@@ -145,12 +145,11 @@ void Sample_Sort(int* A, int* B, int* C, int* D, int n){
     cilk_for (int i = 0;i<random_pick;i++)
         Pick[i] = A[hash32(i)%n]; 
               //for (int i = 0;i<random_pick;i++) cout<<Pick[i]<<" "; cout<<"\n";
-    sort(Pick, Pick+random_pick);cout<<"??\n";
+    sort(Pick, Pick+random_pick);
             //-------Randomly Pick every cLogn samples
     for (int i = 0, j=0; j<buckets-1;  j++,i+=bucket_quotient * logn)
         Sample[j] = Pick[i];
     Sample[buckets - 1] = INT_MAX;      //for (int i = 0; i < buckets; i++) cout<< Sample[i]<<" "; cout<<"\n";
-    cout<<"step3"<<endl;
     //-----------------Step 3--------------------
         //First, get the count for each subarray in each bucket. I store them in C
     for (int i = 0; i < buckets; i++){
@@ -161,9 +160,7 @@ void Sample_Sort(int* A, int* B, int* C, int* D, int n){
             Merge(A+i*bucket_size, bucket_size ,C+i*buckets,buckets);
         //for (int j = i;j<i+buckets;j++) cout<<C[j]<<" "; cout<<"\n";
     }
-    cout<<"step4.0"<<endl;
     for (int i = 0; i<buckets*buckets;i++) D[i] = C[i];
-    cout<<"Transpose"<<endl;
         //Then, transpose the array     
     //for (int i = 0; i < buckets*buckets; i++) if ((i+1)%buckets == 0) cout<< C[i]<<"\n"; else cout<< C[i]<<" "; cout<<"\n";
     Transpose(C,buckets,0,buckets,0,buckets);

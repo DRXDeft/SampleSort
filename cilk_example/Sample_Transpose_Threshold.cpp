@@ -135,7 +135,7 @@ void Sample_Sort(int* A, int* B, int* C, int* D, int n){
     InsertPointer[0] = Offset[0] = 0;
     for (int i = 1; i<buckets; i++)
         InsertPointer[i] = Offset[i] = reduce(C+(i-1)*buckets,buckets)+Offset[i-1];
-    //for (int i = 0; i<buckets; i++) cout<<InsertPointer[i]<<" "; cout<<"\n";
+    for (int i = 0; i<buckets; i++) cout<<InsertPointer[i]<<" "; cout<<"\n";
     
         //Lastly, move each element to the corresponding bucket
     for (int i = 0; i<buckets; i++){
