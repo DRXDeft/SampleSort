@@ -204,7 +204,7 @@ int main(int argc, char** argv) {
     int* D = new int[n];
     for (int i = 0; i < n; i++) C[i] = 0;
 	//cilk_for (int i = 0; i < n; i++) A[i] = i;
-    for (int i = 0,j=n; i < n; i++,j--) A[i] = j;
+    for (int i = 0,j=n; i < n; i++,j--) A[i] = i;
     //Verification(A,n);
     cout << "Data Generation is Complete, Start Sorting and Timing!\n";
 	timer t; t.start();
