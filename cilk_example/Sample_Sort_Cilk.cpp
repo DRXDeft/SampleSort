@@ -193,7 +193,7 @@ void Sample_Sort(int* A, int* B, int* C, int* D, int n){
 }
 
 int main(int argc, char** argv) {
-	if (argc < 2) {
+	if (argc < 3) {
 		cout << "Usage: ./reduce [num_elements] [distribution=1]" << endl;
 		return 0;
 	}
@@ -202,6 +202,14 @@ int main(int argc, char** argv) {
     int* B = new int[n];
     int* C = new int[n];
     int* D = new int[n];
+    int distribution = atoi(argv[2]);
+    if (distribution == 1)
+        random(A,n);
+    else if (distribution ==2)
+        almostsort(A,n);
+    else if (distribution ==3)
+        zipfan(A,n);
+    
     for (int i = 0; i < n; i++) C[i] = 0;
 	//cilk_for (int i = 0; i < n; i++) A[i] = i;
     for (int i = 0,j=n; i < n; i++,j--) A[i] = i;
