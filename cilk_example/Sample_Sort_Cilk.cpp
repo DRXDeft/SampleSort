@@ -174,14 +174,14 @@ void Sample_Sort(int* A, int* B, int* C, int* D, int n){
     //for (int i = 0; i<buckets; i++) cout<<InsertPointer[i]<<" "; cout<<"\n";
     
         //Lastly, move each element to the corresponding bucket
-    cilk_for (int i = 0; i<buckets; i++){
+    for (int i = 0; i<buckets; i++){
         if (i == buckets-1)
             Move(A+i*bucket_size, B, n-i*bucket_size, D+i*buckets, buckets);
         else
             Move(A+i*bucket_size, B, bucket_size, D+i*buckets, buckets);
     }
     //-----------------Step 4--------------------
-    cilk_for (int i = 0; i<buckets; i++){
+    for (int i = 0; i<buckets; i++){
         if (i == buckets-1)
             sort(B+Offset[i],B+n);
         else
