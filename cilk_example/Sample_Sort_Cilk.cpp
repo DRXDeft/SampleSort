@@ -141,13 +141,17 @@ void Sample_Sort(int* A, int* B, int* C, int* D, int n){
     //---------------------Step 2--------------------
     int logn = log2_up(n);
     int random_pick = bucket_quotient * buckets * logn;
+     cout<<"?-\n";
             //-------Randomly Pick cRootnLogn samples
     for (int i = 0;i<random_pick;i++)
         Pick[i] = A[hash32(i)%n];           //for (int i = 0;i<random_pick;i++) cout<<Pick[i]<<" "; cout<<"\n";
+    cout<<"?--\n";
     sort(Pick, Pick+random_pick);
+    cout<<"?---\n";
             //-------Randomly Pick every cLogn samples
     for (int i = 0, j=0; j<buckets-1;  j++,i+=bucket_quotient * logn)
         Sample[j] = Pick[i];
+    cout<<"?----\n";
     Sample[buckets - 1] = INT_MAX;      //for (int i = 0; i < buckets; i++) cout<< Sample[i]<<" "; cout<<"\n";
     cout<<"??\n";
     
