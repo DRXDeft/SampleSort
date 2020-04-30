@@ -128,7 +128,7 @@ void Sample_Sort(int* A, int* B, int* C, int* D, int n){
     int bucket_size = n / buckets;
 
     //--------------------Step 1--------------------
-    for (int i = 0; i<buckets; i++){
+    cilk_for (int i = 0; i<buckets; i++){
         if (i == buckets - 1)
             sort(A+(buckets-1)*bucket_size,A+n);
         else
@@ -144,7 +144,7 @@ void Sample_Sort(int* A, int* B, int* C, int* D, int n){
             //-------Randomly Pick cRootnLogn samples
     cilk_for (int i = 0;i<random_pick;i++)
         Pick[i] = A[hash32(i)%n];           //for (int i = 0;i<random_pick;i++) cout<<Pick[i]<<" "; cout<<"\n";
-    cout<<"?--\n";
+    cout<<"?--"<<random_pick<<"\n";
     sort(Pick, Pick+random_pick);
     cout<<"?---\n";
             //-------Randomly Pick every cLogn samples
