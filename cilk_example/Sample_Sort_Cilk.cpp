@@ -112,14 +112,14 @@ void Transpose(int* C, int n, int x, int lx, int y, int ly) {
     }
     else if (lx >= ly){
         int midx = lx/2;
-        cilk_spawn  Transpose(C,n,x, midx, y, ly);
+        Transpose(C,n,x, midx, y, ly);
         Transpose(C,n,x+midx, lx-midx, y, ly);
-        cilk_sync;
+        
     }else{
         int midy = ly/2;
-        cilk_spawn Transpose(C,n,x,lx,y,midy);
+        Transpose(C,n,x,lx,y,midy);
         Transpose(C,n,x,lx,y+midy,ly-midy);
-        cilk_sync;
+        
     }
 }
 void Sample_Sort(int* A, int* B, int* C, int* D, int n){
