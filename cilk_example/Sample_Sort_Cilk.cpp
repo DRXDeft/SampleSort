@@ -20,24 +20,6 @@ void almostsort(int *A, int n) {
     cilk_for(int i = n / 2; i < n; i++) { A[i] = i + 2; }
     A[n - 1] = n / 2 + 1;
 }
-void normal(int *A, int m) {
-    std::default_random_engine e;                   //引擎
-    std::normal_distribution<double> n(m / 2, 1.5); //均值, 方差
-    std::vector<unsigned> vals(m);
-    for (std::size_t i = 0; i != m; ++i) {
-        unsigned v = std::lround(n(e)); //取整-最近的整数
-        if (v < vals.size())
-            ++vals[v];
-    }
-    int k = 0;
-    for (std::size_t j = 0; j != vals.size(); ++j) {
-        for (int i = 0; i < vals[j]; i++)
-            A[k++] = i;
-    }
-    // std::cout << j << " : " << vals[j] << std::string(vals[j], '*') <<
-    // std::endl; int sum = std::accumulate(vals.begin(), vals.end(), 0); cout <<
-    // "sum = " << sum << endl;
-}
 void zipfan(int *List, int n) {
     int R = 2000;
     double A = 1.25;
