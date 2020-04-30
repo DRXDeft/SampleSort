@@ -181,7 +181,7 @@ void Sample_Sort(int* A, int* B, int* C, int* D, int n){
             Move(A+i*bucket_size, B, bucket_size, D+i*buckets, buckets);
     }
     //-----------------Step 4--------------------
-    for (int i = 0; i<buckets; i++){
+    cilk_for (int i = 0; i<buckets; i++){
         if (i == buckets-1)
             sort(B+Offset[i],B+n);
         else
