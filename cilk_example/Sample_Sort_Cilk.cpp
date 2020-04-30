@@ -137,7 +137,7 @@ void Sample_Sort(int* A, int* B, int* C, int* D, int n){
     }
     //for (int i = 0;i<n;i++) cout<< A[i]<<" "; cout<<endl;
     
-    
+    cout<<"?\n";
     //---------------------Step 2--------------------
     int logn = log2_up(n);
     int random_pick = bucket_quotient * buckets * logn;
@@ -149,7 +149,7 @@ void Sample_Sort(int* A, int* B, int* C, int* D, int n){
     for (int i = 0, j=0; j<buckets-1;  j++,i+=bucket_quotient * logn)
         Sample[j] = Pick[i];
     Sample[buckets - 1] = INT_MAX;      //for (int i = 0; i < buckets; i++) cout<< Sample[i]<<" "; cout<<"\n";
-    
+    cout<<"??\n";
     
     //-----------------Step 3--------------------
         //First, get the count for each subarray in each bucket. I store them in C
@@ -181,7 +181,7 @@ void Sample_Sort(int* A, int* B, int* C, int* D, int n){
         else
             Move(A+i*bucket_size, B, bucket_size, D+i*buckets, buckets);
     }
-
+    cout<<"???\n";
     //-----------------Step 4--------------------
     cilk_for (int i = 0; i<buckets; i++){
         if (i == buckets-1)
