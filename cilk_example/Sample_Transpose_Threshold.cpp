@@ -7,10 +7,11 @@
 //#include <cilk/cilk_api.h>
 //#include "get_time.h"
 #include <cmath>
+#include <algorithm>
 using namespace std;
 #define THRESHOLD_OF_TRANSPOSE 100
 #define THRESHOLD_OF_DISTRIBUTION 100
-int Pick[100001],Sample[100001],Offset[100001],InsertPointer[100001];
+int Pick[10000001],Sample[100001],Offset[100001],InsertPointer[100001];
 int log2_up(int k){
     int a = 0;
     while (k){
