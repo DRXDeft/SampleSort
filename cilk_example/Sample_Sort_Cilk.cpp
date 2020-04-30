@@ -11,7 +11,7 @@
 using namespace std;
 #define THRESHOLD_OF_TRANSPOSE 100
 #define THRESHOLD_OF_DISTRIBUTION 100
-#define THRESHOLD_OF_REDUCE 100
+#define THRESHOLD_OF_REDUCE 500
 int Pick[10000000],Sample[100001],Offset[100001],InsertPointer[100001];
 inline uint32_t hash32(uint32_t a) {
 	a = (a+0x7ed55d16) + (a<<12);
