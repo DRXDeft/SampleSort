@@ -144,19 +144,15 @@ void Sample_Sort(int* A, int* B, int* C, int* D, int n){
             //-------Randomly Pick cRootnLogn samples
     cilk_for (int i = 0;i<random_pick;i++)
         Pick[i] = A[hash32(i)%n];           //for (int i = 0;i<random_pick;i++) cout<<Pick[i]<<" "; cout<<"\n";
-    cout<<"?--"<<random_pick<<"\n";
     sort(Pick, Pick+random_pick);
-    cout<<"?---\n";
             //-------Randomly Pick every cLogn samples
     for (int i = 0, j=0; j<buckets-1;  j++,i+=bucket_quotient * logn)
         Sample[j] = Pick[i];
-    cout<<"?----\n";
     Sample[buckets - 1] = INT_MAX;      //for (int i = 0; i < buckets; i++) cout<< Sample[i]<<" "; cout<<"\n";
-    cout<<"??\n";
     
     //-----------------Step 3--------------------
         //First, get the count for each subarray in each bucket. I store them in C
-    cilk_for (int i = 0; i < buckets; i++){
+    for (int i = 0; i < buckets; i++){
         //cout<<"-----------Bucket "<<i/buckets<<"------------------\n"; for (int j = i;j<i+buckets;j++) cout<<A[j]<<" "; cout<<"\n";
         if (i == buckets-1) 
             Merge(A+i*bucket_size, n-i*bucket_size ,C+i*buckets,buckets);
@@ -184,7 +180,6 @@ void Sample_Sort(int* A, int* B, int* C, int* D, int n){
         else
             Move(A+i*bucket_size, B, bucket_size, D+i*buckets, buckets);
     }
-    cout<<"???\n";
     //-----------------Step 4--------------------
     cilk_for (int i = 0; i<buckets; i++){
         if (i == buckets-1)
