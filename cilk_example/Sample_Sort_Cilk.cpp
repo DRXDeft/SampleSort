@@ -65,31 +65,6 @@ void zipfan(int *List, int n) {
             List[i]++;
     }
 }
-void exp(int *A, int n) {
-    int nrolls = n;  // number of experiments
-    int nstars = n;    // maximum number of stars to distribute
-    const int nintervals = sqrt(n); // number of intervals
-
-    std::default_random_engine generator;
-    std::exponential_distribution<double> distribution(sqrt(n));
-
-    int p[nintervals] = {};
-
-    for (int i = 0; i < nrolls; ++i) {
-        double number = distribution(generator);
-        if (number < 1.0)
-            ++p[int(nintervals * number)];
-    }
-
-	int k = 0;
-    for (int i = 0; i < nintervals; ++i) {
-		for (int j = 0; j< p[i] * nstars / nrolls; j++)
-			A[k++] = i;
-        /*std::cout << float(i) /// nintervals << "-" << float(i + 1) / nintervals
-                  << ": ";
-        std::cout << std::string(p[i] * nstars / nrolls, '*') << std::endl;*/
-    }
-}
 int log2_up(int k){
     int a = 0;
     while (k){
