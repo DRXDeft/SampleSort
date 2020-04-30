@@ -11,7 +11,7 @@
 using namespace std;
 #define THRESHOLD_OF_TRANSPOSE 100
 #define THRESHOLD_OF_DISTRIBUTION 100
-int Pick[100001],Sample[100001],Offset[100001],InsertPointer[100001];
+int Pick[10000000],Sample[100001],Offset[100001],InsertPointer[100001];
 inline uint32_t hash32(uint32_t a) {
 	a = (a+0x7ed55d16) + (a<<12);
 	a = (a^0xc761c23c) ^ (a>>19);
@@ -137,13 +137,10 @@ void Sample_Sort(int* A, int* B, int* C, int* D, int n){
     }
     //for (int i = 0;i<n;i++) cout<< A[i]<<" "; cout<<endl;
     
-    cout<<"?\n";
+    
     //---------------------Step 2--------------------
     int logn = log2_up(n);
-    long long tmp1 = logn * bucket_quotient;
-    cout<<"?-!"<<tmp1<<" "<<buckets<<"\n";
-    long long random_pick = tmp1 * ((long long) buckets);
-     cout<<"?-"<<random_pick<<"\n";
+    int random_pick = logn * bucket_quotient * buckets;
             //-------Randomly Pick cRootnLogn samples
     cilk_for (int i = 0;i<random_pick;i++)
         Pick[i] = A[hash32(i)%n];           //for (int i = 0;i<random_pick;i++) cout<<Pick[i]<<" "; cout<<"\n";
