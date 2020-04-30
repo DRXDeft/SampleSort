@@ -12,6 +12,16 @@ using namespace std;
 #define THRESHOLD_OF_TRANSPOSE 100
 #define THRESHOLD_OF_DISTRIBUTION 100
 int Pick[100001],Sample[100001],Offset[100001],InsertPointer[100001];
+inline uint32_t hash32(uint32_t a) {
+	a = (a+0x7ed55d16) + (a<<12);
+	a = (a^0xc761c23c) ^ (a>>19);
+	a = (a+0x165667b1) + (a<<5);
+	a = (a+0xd3a2646c) ^ (a<<9);
+	a = (a+0xfd7046c5) + (a<<3);
+	a = (a^0xb55a4f09) ^ (a>>16);
+	if (a<0) a = -a;
+	return a;
+}
 void random(int *A, int n) {
     cilk_for(int i = 0; i < n; i++) A[i] = (hash32(i)) % (n * 2);
 }
@@ -54,16 +64,6 @@ int log2_up(int k){
         a++;
     }
     return a-1;
-}
-inline uint32_t hash32(uint32_t a) {
-	a = (a+0x7ed55d16) + (a<<12);
-	a = (a^0xc761c23c) ^ (a>>19);
-	a = (a+0x165667b1) + (a<<5);
-	a = (a+0xd3a2646c) ^ (a<<9);
-	a = (a+0xfd7046c5) + (a<<3);
-	a = (a^0xb55a4f09) ^ (a>>16);
-	if (a<0) a = -a;
-	return a;
 }
 bool Verification(int* A, int n){
     for (int i = 0; i<n-1;i++)
