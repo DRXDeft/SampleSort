@@ -81,7 +81,7 @@ void Merge(int* A, int n, int* C, int m){
     }
 }
 int reduce(int* A, int n) {
-	if (n < 5000) {
+	if (n < 256) {
       int ret = 0;
       for (int i = 0; i < n; i++) ret += A[i];
       return ret;
