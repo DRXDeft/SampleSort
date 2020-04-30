@@ -7,6 +7,8 @@
 #include <cilk/cilk_api.h>
 #include "get_time.h"
 #include <cmath>
+#include <STL>
+#include <algorithm>
 using namespace std;
 #define THRESHOLD_OF_TRANSPOSE 100
 #define THRESHOLD_OF_DISTRIBUTION 100
