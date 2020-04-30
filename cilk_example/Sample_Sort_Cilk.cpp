@@ -169,7 +169,7 @@ void Sample_Sort(int* A, int* B, int* C, int* D, int n){
     
         //scan to compute the offsets
     InsertPointer[0] = Offset[0] = 0;
-    for (int i = 1; i<buckets; i++)
+    cilk_for (int i = 1; i<buckets; i++)
         InsertPointer[i] = Offset[i] = reduce(C+(i-1)*buckets,buckets)+Offset[i-1];
     //for (int i = 0; i<buckets; i++) cout<<InsertPointer[i]<<" "; cout<<"\n";
     
