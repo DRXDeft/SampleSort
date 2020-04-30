@@ -3,9 +3,9 @@
 #include <cstdlib>
 #include <cstring>
 #include <climits>
-//#include <cilk/cilk.h>
-//#include <cilk/cilk_api.h>
-//#include "get_time.h"
+#include <cilk/cilk.h>
+#include <cilk/cilk_api.h>
+#include "get_time.h"
 #include <cmath>
 using namespace std;
 #define THRESHOLD_OF_TRANSPOSE 100
@@ -248,11 +248,11 @@ int main(int argc, char** argv) {
     for (int i = 0,j=n; i < n; i++,j--) A[i] = j;
     //Verification(A,n);
     cout << "Data Generation is Complete, Start Sorting and Timing!\n";
-	//timer t; t.start();
+	timer t; t.start();
     
     Sample_Sort(A,B,C,D,n);
-	//t.stop();
-	//cout << "sorting time: " << t.get_total() << "\nStarting Verification Now!\n";
+	t.stop();
+	cout << "sorting time: " << t.get_total() << "\nStarting Verification Now!\n";
 	if (Verification(B,n))  cout<<"The result is correct!" << endl; else cout<<"The result is incorrect!" << endl;
 	
     return 0;
