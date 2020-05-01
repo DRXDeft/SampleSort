@@ -270,7 +270,7 @@ void Sample_Sort(int* A, int* B, int* C, int* D, int n){
             sort(B+Offset[i],B+Offset[i+1]);
     }
     t4.stop();
-    //cout << "Sort Buckets: " << t4.get_total() << endl;
+    cout << "Sort Buckets: " << t4.get_total() << endl;
 }
 
 int main(int argc, char** argv) {
