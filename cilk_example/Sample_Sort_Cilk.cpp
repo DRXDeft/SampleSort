@@ -247,7 +247,7 @@ void Sample_Sort(int* A, int* B, int* C, int* D, int n){
         //scan to compute the offsets
     timer t3_3; t3_3.start();
     InsertPointer[0] = Offset[0] = 0;
-    cilk_for (int i = 1; i<buckets; i++)
+    for (int i = 1; i<buckets; i++)
         InsertPointer[i] = Offset[i] = reduce(C+(i-1)*buckets,buckets)+Offset[i-1];
     t3_3.stop();
     cout << "Scan:         " << t3_3.get_total() << endl;
