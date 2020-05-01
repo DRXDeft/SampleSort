@@ -144,13 +144,14 @@ void Merge(int* A, int n, int* C, int start, int end) {
     if (!n)
         return; 
     if (n<=500){
-         int i=0,j=start;
-        while( i<n || j<end){
-            while ( j<end && A[i]>Sample[j]) {j++;}//cout<<i<<" "<<j<<"\n";};
-            if (j==end) j--;
-            //cout<<"\n";
-            while ( i<n && A[i]<=Sample[j]) {i++;C[j]++;}//cout<<i<<" "<<j<<"\n";}
-            if (i==n)   return;
+        int i = 0, j = 0;
+        while ((i < n) && (j< end-start+1)) {
+            if (A[i]<=Sample[j]) {
+                C[j]++; 
+                i++;
+            } else {
+                j++;
+            } 
         }
     }
     if (start == end){
