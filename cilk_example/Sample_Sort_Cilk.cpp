@@ -185,7 +185,7 @@ void Sample_Sort(int* A, int* B, int* C, int* D, int n){
     int bucket_size = n / buckets;
 
     //--------------------Step 1--------------------
-    timer t1; t1.start();
+    //timer t1; t1.start();
     cilk_for (int i = 0; i<buckets; i++){
         if (i == buckets - 1)
             sort(A+(buckets-1)*bucket_size,A+n);
@@ -193,13 +193,13 @@ void Sample_Sort(int* A, int* B, int* C, int* D, int n){
             sort(A+i*bucket_size,A+(i+1)*bucket_size);
         
     }
-    t1.stop();
-    cout << "Split:        " << t1.get_total() << endl;
+    //t1.stop();
+    //cout << "Split:        " << t1.get_total() << endl;
     //for (int i = 0;i<n;i++) cout<< A[i]<<" "; cout<<endl;
     
     
     //---------------------Step 2--------------------
-    timer t2; t2.start();
+    //timer t2; t2.start();
     int logn = log2_up(n);
     int random_pick = logn * bucket_quotient * buckets;
             //-------Randomly Pick cRootnLogn samples
@@ -211,13 +211,13 @@ void Sample_Sort(int* A, int* B, int* C, int* D, int n){
     for (int i = 0, j=0; j<buckets-1;  j++,i+=bucket_quotient * logn)
         Sample[j] = Pick[i];
     Sample[buckets - 1] = INT_MAX;      //for (int i = 0; i < buckets; i++) cout<< Sample[i]<<" "; cout<<"\n";
-    t2.stop();
-    cout << "Pivot:        " << t2.get_total() << endl;
+    //t2.stop();
+    //cout << "Pivot:        " << t2.get_total() << endl;
 
     //Step 3
     //-----------------Step 3_1--------------------
         //First, get the count for each subarray in each bucket. I store them in C
-    timer t3_1; t3_1.start();
+    //timer t3_1; t3_1.start();
     for (int i = 0; i < buckets; i++){
         //cout<<"-----------Bucket "<<i/buckets<<"------------------\n"; for (int j = i;j<i+buckets;j++) cout<<A[j]<<" "; cout<<"\n";
         if (i == buckets-1) 
@@ -227,50 +227,50 @@ void Sample_Sort(int* A, int* B, int* C, int* D, int n){
         //for (int j = i;j<i+buckets;j++) cout<<C[j]<<" "; cout<<"\n";
     }
     for (int i = 0; i<buckets*buckets;i++) D[i] = C[i];
-    t3_1.stop();
-    cout << "Merge:        " << t3_1.get_total() << endl;
+    //t3_1.stop();
+    //cout << "Merge:        " << t3_1.get_total() << endl;
 
     //-----------------Step 3_2--------------------    
         //Then, transpose the array     
     //for (int i = 0; i < buckets*buckets; i++) if ((i+1)%buckets == 0) cout<< C[i]<<"\n"; else cout<< C[i]<<" "; cout<<"\n";
-    timer t3_2; t3_2.start();
+    //timer t3_2; t3_2.start();
     Transpose(C,buckets,0,buckets,0,buckets);
-    t3_2.stop();
+    //t3_2.stop();
     cout << "Transpose:    " << t3_2.get_total() << endl;
     //for (int i = 0; i < buckets*buckets; i++) if ((i+1)%buckets == 0) cout<< C[i]<<"\n"; else cout<< C[i]<<" "; cout<<"\n";
     
     //-----------------Step 3_3--------------------
         //scan to compute the offsets
-    timer t3_3; t3_3.start();
+    //timer t3_3; t3_3.start();
     InsertPointer[0] = Offset[0] = 0;
     for (int i = 1; i<buckets; i++)
         InsertPointer[i] = Offset[i] = reduce(C+(i-1)*buckets,buckets)+Offset[i-1];
-    t3_3.stop();
-    cout << "Scan:         " << t3_3.get_total() << endl;
+    //t3_3.stop();
+    //cout << "Scan:         " << t3_3.get_total() << endl;
     //for (int i = 0; i<buckets; i++) cout<<InsertPointer[i]<<" "; cout<<"\n";
 
     //-----------------Step 3_4-------------------- 
         //Lastly, move each element to the corresponding bucket
-    timer t3_4; t3_4.start();        
+    //timer t3_4; t3_4.start();        
     for (int i = 0; i<buckets; i++){
         if (i == buckets-1)
             Move(A+i*bucket_size, B, n-i*bucket_size, D+i*buckets, buckets);
         else
             Move(A+i*bucket_size, B, bucket_size, D+i*buckets, buckets);
     }
-    t3_4.stop();
-    cout << "Distribution: " << t3_4.get_total() << endl;
+    //t3_4.stop();
+    //cout << "Distribution: " << t3_4.get_total() << endl;
 
     //-----------------Step 4--------------------
-    timer t4; t4.start();
+    //timer t4; t4.start();
     cilk_for (int i = 0; i<buckets; i++){
         if (i == buckets-1)
             sort(B+Offset[i],B+n);
         else
             sort(B+Offset[i],B+Offset[i+1]);
     }
-    t4.stop();
-    cout << "Sort Buckets: " << t4.get_total() << endl;
+    //t4.stop();
+    //cout << "Sort Buckets: " << t4.get_total() << endl;
 }
 
 int main(int argc, char** argv) {
