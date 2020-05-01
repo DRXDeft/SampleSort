@@ -262,7 +262,7 @@ void Sample_Sort(int* A, int* B, int* C, int* D, int n){
     //-----------------Step 3_1--------------------
         //First, get the count for each subarray in each bucket. I store them in C
     timer t3_1; t3_1.start();
-    for (int i = 0; i < buckets; i++){
+    cilk_for (int i = 0; i < buckets; i++){
         //cout<<"-----------Bucket "<<i/buckets<<"------------------\n"; for (int j = i;j<i+buckets;j++) cout<<A[j]<<" "; cout<<"\n";
         if (i == buckets-1) 
             Merge(A+i*bucket_size, n-i*bucket_size ,C+i*buckets,0,buckets-1);
@@ -341,7 +341,7 @@ int main(int argc, char** argv) {
     else if (distribution ==6)
         normal(A,n);
     for (int i = 0; i < n; i++) C[i] = 0;
-	//cilk_for (int i = 0; i < n; i++) A[i] = i;
+	cilk_for (int i = 0; i < n; i++) A[i] = j;
     //Verification(A,n);
     cout << "Data Generation is Complete, Start Sorting and Timing!\n";
 	timer t; t.start();
