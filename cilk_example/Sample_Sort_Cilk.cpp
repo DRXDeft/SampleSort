@@ -236,7 +236,7 @@ void Sample_Sort(int* A, int* B, int* C, int* D, int n){
     //timer t3_2; t3_2.start();
     Transpose(C,buckets,0,buckets,0,buckets);
     //t3_2.stop();
-    cout << "Transpose:    " << t3_2.get_total() << endl;
+    //cout << "Transpose:    " << t3_2.get_total() << endl;
     //for (int i = 0; i < buckets*buckets; i++) if ((i+1)%buckets == 0) cout<< C[i]<<"\n"; else cout<< C[i]<<" "; cout<<"\n";
     
     //-----------------Step 3_3--------------------
