@@ -341,7 +341,7 @@ int main(int argc, char** argv) {
     else if (distribution ==6)
         normal(A,n);
     for (int i = 0; i < n; i++) C[i] = 0;
-	cilk_for (int i = 0; i < n; i++) A[i] = j;
+	cilk_for (int i = 0; i < n; i++) A[i] = n-i;
     //Verification(A,n);
     cout << "Data Generation is Complete, Start Sorting and Timing!\n";
 	timer t; t.start();
