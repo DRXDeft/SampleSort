@@ -15,6 +15,7 @@ using namespace std;
 #define THRESHOLD_OF_TRANSPOSE 1000
 #define THRESHOLD_OF_DISTRIBUTION 100
 #define THRESHOLD_OF_REDUCE 1000
+#define THRESHOLD_OF_MERGE 1000
 int Pick[10000000],Sample[100001],Offset[100001],InsertPointer[100001];
 inline uint32_t hash32(uint32_t a) {
 	a = (a+0x7ed55d16) + (a<<12);
@@ -140,8 +141,18 @@ int binary_search(int* A, int start, int end, int k){
         return binary_search(A,mid+1,end,k);
 }
 void Merge(int* A, int n, int* C, int start, int end) {
-    if (n == 0)
+    if (!n)
         return; 
+    if (n<=500){
+         int i=0,j=start;
+        while( i<n || j<end){
+            while ( j<end && A[i]>Sample[j]) {j++;}//cout<<i<<" "<<j<<"\n";};
+            if (j==end) j--;
+            //cout<<"\n";
+            while ( i<n && A[i]<=Sample[j]) {i++;C[j]++;}//cout<<i<<" "<<j<<"\n";}
+            if (i==n)   return;
+        }
+    }
     if (start == end){
         C[start] = n;
         return;
