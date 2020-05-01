@@ -141,7 +141,16 @@ int binary_search(int* A, int start, int end, int k){
         return binary_search(A,mid+1,end,k);
 }
 void Merge(int* A, int n, int* C, int start, int end) {
-    if (!n)
+    int i = 0, j = 0;
+        while ((i < n) && (j< end-start+1)) {
+            if (A[i]<=Sample[j]) {
+                C[j]++; 
+                i++;
+            } else {
+                j++;
+            } 
+        }
+    /*if (!n)
         return; 
     if (n<=THRESHOLD_OF_MERGE){
         int i = 0, j = 0;
@@ -165,7 +174,7 @@ void Merge(int* A, int n, int* C, int start, int end) {
         int midn = binary_search(A,0,n-1,Sample[midm]);
         Merge(A,midn+1,C,start,midm);
         Merge(A+midn+1, n-midn-1, C,midm+1,end);
-    }
+    }*/
 }
 
 int reduce(int* A, int n) {
