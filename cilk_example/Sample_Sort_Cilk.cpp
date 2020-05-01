@@ -127,28 +127,34 @@ bool Verification(int* A, int n){
         if (A[i]>A[i+1])    return false;
     return true;
 }
-void Merg_(int* A, int n, int* C, int m){
-    int i=0,j=0;
-    while( i<n || j<m){
-        while ( j<m && A[i]>Sample[j]) {j++;}//cout<<i<<" "<<j<<"\n";};
-        if (j==m) j--;
-        //cout<<"\n";
-        while ( i<n && A[i]<=Sample[j]) {i++;C[j]++;}//cout<<i<<" "<<j<<"\n";}
-        if (i==n)   return;
-    }
+int binary_search(int* A, int start, int end, int k){
+    if (start == end)
+        return start;
+    int mid = (start+end)/2;
+    if (A[mid]>k)
+        return binary_search(A,start,mid-1, k);
+    else
+        return binary_search(A,mid,start,k);
+    
+    
 }
-void Merge(int* A, int n, int* C, int m) {
-    int i=0, j=0;
-    while (i<n && j<m){
-        if (A[i]<=Sample[j]){
-            i++;
-            C[j]++;
-        }      
-        else
-        {
-            j++;
-        }
+void Merge(int* A, int n, int* C, int start, int end) {
+    if (n == 0)
+        return; 
+    if (start == end){
+        C[start] = n;
+        return;
     }
+    int midm = (start+end)/2;
+    if (A[0]>Sample[midm])
+        Merge(A,n,C,midm+1,end);
+    else{
+        int midn = binary_search(A,0,n-1,Sample[midm]);
+        Merge(A,midn,C,start,midm);
+        Merge(A+midn, n-midn, C,midm+1,end);
+        sync;
+    }
+    
 }
 
 int reduce(int* A, int n) {
@@ -239,9 +245,9 @@ void Sample_Sort(int* A, int* B, int* C, int* D, int n){
     cilk_for (int i = 0; i < buckets; i++){
         //cout<<"-----------Bucket "<<i/buckets<<"------------------\n"; for (int j = i;j<i+buckets;j++) cout<<A[j]<<" "; cout<<"\n";
         if (i == buckets-1) 
-            Merge(A+i*bucket_size, n-i*bucket_size ,C+i*buckets,buckets);
+            Merge(A+i*bucket_size, n-i*bucket_size ,C+i*buckets,0,buckets-1);
         else
-            Merge(A+i*bucket_size, bucket_size ,C+i*buckets,buckets);
+            Merge(A+i*bucket_size, bucket_size ,C+i*buckets,0,buckets-1);
         //for (int j = i;j<i+buckets;j++) cout<<C[j]<<" "; cout<<"\n";
     }
     for (int i = 0; i<buckets*buckets;i++) D[i] = C[i];
