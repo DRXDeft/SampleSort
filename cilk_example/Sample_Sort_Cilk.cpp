@@ -28,7 +28,7 @@ inline uint32_t hash32(uint32_t a) {
 	return a;
 }
 void random(int *A, int n) {
-    cilk_for(int i = 0; i < n; i++) A[i] = (hash32(i)) % (n * 3);
+    cilk_for(int i = 0; i < n; i++) A[i] = (hash32(i)) % (n << 2);
 }
 void almostsort(int *A, int n) {
     cilk_for(int i = 0; i < n / 2; i++) { A[i] = i + 1; }
@@ -271,12 +271,8 @@ void Sample_Sort(int* A, int* B, int* C, int* D, int n){
             Merge(A+i*bucket_size, bucket_size ,C+i*buckets,0,buckets-1);
         //for (int j = i;j<i+buckets;j++) cout<<C[j]<<" "; cout<<"\n";
     }
-    int t = buckets*buckets;
-    cilk_for (int i = 0; i<t;i+=1000){
-        int x = min(t,i + 1000);
-        for (int j = i; j<x;j++)
-            D[j] = C[j];
-    } 
+    cilk_for (int i = 0; i<buckets;i++)
+            D[i] = C[i];
     t3_1.stop();
     cout << "Merge:        " << t3_1.get_total() << endl;
 
