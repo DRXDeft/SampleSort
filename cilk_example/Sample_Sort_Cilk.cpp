@@ -150,8 +150,9 @@ void Merge(int* A, int n, int* C, int start, int end) {
         Merge(A,n,C,midm+1,end);
     else{
         int midn = binary_search(A,0,n-1,Sample[midm]);
-        Merge(A,midn,C,start,midm);
+        cilk_spawn Merge(A,midn,C,start,midm);
         Merge(A+midn, n-midn, C,midm+1,end);
+        cilk_sync;
     }
     
 }
