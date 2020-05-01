@@ -175,25 +175,28 @@ void Move(int *A, int *B, int bucket_size, int *D, int buckets) {
             B[InsertPointer[i]++] = A[p++];
     }
 }
-void Transpose(int *C, int n, int x, int lx, int y, int ly) {
+void Transpose(int* C, int n, int x, int lx, int y, int ly, int* D) {
     if ((lx <= THRESHOLD_OF_TRANSPOSE) && (ly <= THRESHOLD_OF_TRANSPOSE)) {
         for (int i = x; i < x + lx; i++)
             for (int j = y; j < y + ly; j++)
                 if (i < j) {
+                    D[(n * i) + j] = C[(n * i) + j];
+                    D[(n * j) + i] = C[(n * j) + i];
                     int tmp = C[(n * j) + i];
                     C[(n * j) + i] = C[(n * i) + j];
                     C[(n * i) + j] = tmp;
+
                     // cout <<"Transfer: "<<"x="<<x<<" y="<<y<<endl;
                 }
     } else if (lx >= ly) {
         int midx = lx / 2;
-        cilk_spawn Transpose(C, n, x, midx, y, ly);
-        Transpose(C, n, x + midx, lx - midx, y, ly);
+        cilk_spawn Transpose(C, n, x, midx, y, ly,D);
+        Transpose(C, n, x + midx, lx - midx, y, ly,D);
         cilk_sync;
     } else {
         int midy = ly / 2;
-        cilk_spawn Transpose(C, n, x, lx, y, midy);
-        Transpose(C, n, x, lx, y + midy, ly - midy);
+        cilk_spawn Transpose(C, n, x, lx, y, midy,D);
+        Transpose(C, n, x, lx, y + midy, ly - midy,D);
         cilk_sync;
     }
 }
@@ -253,7 +256,7 @@ void Sample_Sort(int *A, int *B, int *C, int *D, int n) {
                   buckets - 1);
         // for (int j = i;j<i+buckets;j++) cout<<C[j]<<" "; cout<<"\n";
     }
-    cilk_for(int i = 0; i < buckets*buckets; i++) D[i] = C[i];
+    //cilk_for(int i = 0; i < buckets*buckets; i++) D[i] = C[i];
     t3_1.stop();
     cout << "Merge:        " << t3_1.get_total() << endl;
 
@@ -263,7 +266,7 @@ void Sample_Sort(int *A, int *B, int *C, int *D, int n) {
     // C[i]<<"\n"; else cout<< C[i]<<" "; cout<<"\n";
     timer t3_2;
     t3_2.start();
-    Transpose(C, buckets, 0, buckets, 0, buckets);
+    Transpose(C, buckets, 0, buckets, 0, buckets,D);
     t3_2.stop();
     cout << "Transpose:    " << t3_2.get_total() << endl;
     // for (int i = 0; i < buckets*buckets; i++) if ((i+1)%buckets == 0) cout<<
