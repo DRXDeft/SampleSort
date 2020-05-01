@@ -126,6 +126,7 @@ int log2_up(int k){
 bool Verification(int* A, int n){
     for (int i = 0; i<n-1;i++)
         if (A[i]>A[i+1])    return false;
+        else cout << A[i] <<" ";
     return true;
 }
 int binary_search(int* A, int start, int end, int k){
