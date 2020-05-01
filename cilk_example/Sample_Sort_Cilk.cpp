@@ -272,8 +272,9 @@ void Sample_Sort(int* A, int* B, int* C, int* D, int n){
         //for (int j = i;j<i+buckets;j++) cout<<C[j]<<" "; cout<<"\n";
     }
     int t = buckets*buckets;
-    cilk_for (int i = 0; i<buckets*buckets;i+=500){
-        for (int j = i; j<min(t,i+500);j++)
+    cilk_for (int i = 0; i<t;i+=1000){
+        int x = min(t,i + 1000);
+        for (int j = i; j<x;j++)
             D[j] = C[j];
     } 
     t3_1.stop();
