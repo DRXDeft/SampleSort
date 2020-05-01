@@ -1,31 +1,32 @@
-#include <iostream>
+#include "get_time.h"
+#include <algorithm>
+#include <cilk/cilk.h>
+#include <cilk/cilk_api.h>
+#include <climits>
+#include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <climits>
-#include <cilk/cilk.h>
-#include <cilk/cilk_api.h>
-#include "get_time.h"
-#include <cmath>
-#include <vector>
-#include <algorithm>
+#include <iostream>
 #include <random>
 #include <string>
+#include <vector>
 using namespace std;
 #define THRESHOLD_OF_TRANSPOSE 1000
 #define THRESHOLD_OF_DISTRIBUTION 100
 #define THRESHOLD_OF_REDUCE 1000
 #define THRESHOLD_OF_MERGE 500
-int Pick[10000000],Sample[100001],Offset[100001],InsertPointer[100001];
+int Pick[10000000], Sample[100001], Offset[100001], InsertPointer[100001];
 inline uint32_t hash32(uint32_t a) {
-	a = (a+0x7ed55d16) + (a<<12);
-	a = (a^0xc761c23c) ^ (a>>19);
-	a = (a+0x165667b1) + (a<<5);
-	a = (a+0xd3a2646c) ^ (a<<9);
-	a = (a+0xfd7046c5) + (a<<3);
-	a = (a^0xb55a4f09) ^ (a>>16);
-	if (a<0) a = -a;
-	return a;
+    a = (a + 0x7ed55d16) + (a << 12);
+    a = (a ^ 0xc761c23c) ^ (a >> 19);
+    a = (a + 0x165667b1) + (a << 5);
+    a = (a + 0xd3a2646c) ^ (a << 9);
+    a = (a + 0xfd7046c5) + (a << 3);
+    a = (a ^ 0xb55a4f09) ^ (a >> 16);
+    if (a < 0)
+        a = -a;
+    return a;
 }
 void random(int *A, int n) {
     cilk_for(int i = 0; i < n; i++) A[i] = (hash32(i)) % (n << 2);
@@ -45,8 +46,8 @@ void fewuniq(int *A, int n) {
     }
 }
 void exp(int *A, int n) {
-    int nrolls = n;  // number of experiments
-    int nstars = n;    // maximum number of stars to distribute
+    int nrolls = n;                 // number of experiments
+    int nstars = n;                 // maximum number of stars to distribute
     const int nintervals = sqrt(n); // number of intervals
 
     std::default_random_engine generator;
@@ -60,11 +61,12 @@ void exp(int *A, int n) {
             ++p[int(nintervals * number)];
     }
 
-	int k = 0;
+    int k = 0;
     for (int i = 0; i < nintervals; ++i) {
-		for (int j = 0; j< p[i] * nstars / nrolls; j++)
-			A[k++] = i;
-        /*std::cout << float(i) /// nintervals << "-" << float(i + 1) / nintervals
+        for (int j = 0; j < p[i] * nstars / nrolls; j++)
+            A[k++] = i;
+        /*std::cout << float(i) /// nintervals << "-" << float(i + 1) /
+        nintervals
                   << ": ";
         std::cout << std::string(p[i] * nstars / nrolls, '*') << std::endl;*/
     }
@@ -84,8 +86,8 @@ void normal(int *A, int m) {
             A[k++] = i;
     }
     // std::cout << j << " : " << vals[j] << std::string(vals[j], '*') <<
-    // std::endl; int sum = std::accumulate(vals.begin(), vals.end(), 0); cout <<
-    // "sum = " << sum << endl;
+    // std::endl; int sum = std::accumulate(vals.begin(), vals.end(), 0); cout
+    // << "sum = " << sum << endl;
 }
 
 void zipfan(int *List, int n) {
@@ -115,243 +117,235 @@ void zipfan(int *List, int n) {
             List[i]++;
     }
 }
-int log2_up(int k){
+int log2_up(int k) {
     int a = 0;
-    while (k){
+    while (k) {
         k = k >> 1;
         a++;
     }
-    return a-1;
+    return a - 1;
 }
-bool Verification(int* A, int n){
-    for (int i = 0; i<n-1;i++)
-        if (A[i]>A[i+1])    return false;
+bool Verification(int *A, int n) {
+    for (int i = 0; i < n - 1; i++)
+        if (A[i] > A[i + 1])
+            return false;
     return true;
 }
-int binary_search(int* A, int start, int end, int k){
+int binary_search(int *A, int start, int end, int k) {
     int p;
     if (start == end)
         return start;
-    int mid = (start+end)/2;
-    if (A[mid]>k)
-        return binary_search(A,start,mid-1, k);
-    else if (A[mid]<=k &&  A[mid+1]>k )
+    int mid = (start + end) / 2;
+    if (A[mid] > k)
+        return binary_search(A, start, mid - 1, k);
+    else if (A[mid] <= k && A[mid + 1] > k)
         return mid;
     else
-        return binary_search(A,mid+1,end,k);
+        return binary_search(A, mid + 1, end, k);
 }
-void Merge(int* A, int n, int* C, int start, int end) {
+void Merge(int *A, int n, int *C, int start, int end) {
     int i = 0, j = 0;
-        while ((i < n) && (j< end-start+1)) {
-            if (A[i]<=Sample[j]) {
-                C[j]++; 
-                i++;
-            } else {
-                j++;
-            } 
-        }
-    /*if (!n)
-        return; 
-    if (n<=THRESHOLD_OF_MERGE){
-        int i = 0, j = 0;
-        while ((i < n) && (j< end-start+1)) {
-            if (A[i]<=Sample[j]) {
-                C[j]++; 
-                i++;
-            } else {
-                j++;
-            } 
+    while ((i < n) && (j < end - start + 1)) {
+        if (A[i] <= Sample[j]) {
+            C[j]++;
+            i++;
+        } else {
+            j++;
         }
     }
-    if (start == end){
-        C[start] = n;
-        return;
-    }
-    int midm = (start+end)/2;
-    if (A[0]>Sample[midm])
-        Merge(A,n,C,midm+1,end);
-    else{
-        int midn = binary_search(A,0,n-1,Sample[midm]);
-        Merge(A,midn+1,C,start,midm);
-        Merge(A+midn+1, n-midn-1, C,midm+1,end);
-    }*/
 }
 
-int reduce(int* A, int n) {
-	if (n < THRESHOLD_OF_REDUCE) {
-      int ret = 0;
-      for (int i = 0; i < n; i++) ret += A[i];
-      return ret;
+int reduce(int *A, int n) {
+    if (n < THRESHOLD_OF_REDUCE) {
+        int ret = 0;
+        for (int i = 0; i < n; i++)
+            ret += A[i];
+        return ret;
     }
-	int L, R;
-    L = cilk_spawn reduce(A, n/2); 
-    R = reduce(A+n/2, n-n/2);
+    int L, R;
+    L = cilk_spawn reduce(A, n / 2);
+    R = reduce(A + n / 2, n - n / 2);
     cilk_sync;
 
-	return L+R;
+    return L + R;
 }
-void Move(int* A, int* B, int bucket_size, int* D, int buckets){
-    for (int i = 0,p=0; i<buckets; i++){
-        for (int j = 0; j<D[i];j++)
+void Move(int *A, int *B, int bucket_size, int *D, int buckets) {
+    for (int i = 0, p = 0; i < buckets; i++) {
+        for (int j = 0; j < D[i]; j++)
             B[InsertPointer[i]++] = A[p++];
     }
 }
-void Transpose(int* C, int n, int x, int lx, int y, int ly) {
+void Transpose(int *C, int n, int x, int lx, int y, int ly) {
     if ((lx <= THRESHOLD_OF_TRANSPOSE) && (ly <= THRESHOLD_OF_TRANSPOSE)) {
-        for (int i = x; i<x+lx; i++)
-            for (int j = y; j<y+ly; j++)
-                if(i<j){
-                    int tmp = C[(n*j) + i];
-                    C[(n*j) + i] = C[(n*i) + j];
-                    C[(n*i) + j] = tmp;
-                    //cout <<"Transfer: "<<"x="<<x<<" y="<<y<<endl;
+        for (int i = x; i < x + lx; i++)
+            for (int j = y; j < y + ly; j++)
+                if (i < j) {
+                    int tmp = C[(n * j) + i];
+                    C[(n * j) + i] = C[(n * i) + j];
+                    C[(n * i) + j] = tmp;
+                    // cout <<"Transfer: "<<"x="<<x<<" y="<<y<<endl;
                 }
-    }
-    else if (lx >= ly){
-        int midx = lx/2;
-        cilk_spawn Transpose(C,n,x, midx, y, ly);
-        Transpose(C,n,x+midx, lx-midx, y, ly);
+    } else if (lx >= ly) {
+        int midx = lx / 2;
+        cilk_spawn Transpose(C, n, x, midx, y, ly);
+        Transpose(C, n, x + midx, lx - midx, y, ly);
         cilk_sync;
-    }else{
-        int midy = ly/2;
-        cilk_spawn Transpose(C,n,x,lx,y,midy);
-        Transpose(C,n,x,lx,y+midy,ly-midy);
+    } else {
+        int midy = ly / 2;
+        cilk_spawn Transpose(C, n, x, lx, y, midy);
+        Transpose(C, n, x, lx, y + midy, ly - midy);
         cilk_sync;
     }
 }
-void Sample_Sort(int* A, int* B, int* C, int* D, int n){
+void Sample_Sort(int *A, int *B, int *C, int *D, int n) {
     int bucket_quotient = 1;
     int buckets = sqrt(n);
     int bucket_size = n / buckets;
 
     //--------------------Step 1--------------------
-    timer t1; t1.start();
-    cilk_for (int i = 0; i<buckets; i++){
+    timer t1;
+    t1.start();
+    cilk_for(int i = 0; i < buckets; i++) {
         if (i == buckets - 1)
-            sort(A+(buckets-1)*bucket_size,A+n);
+            sort(A + (buckets - 1) * bucket_size, A + n);
         else
-            sort(A+i*bucket_size,A+(i+1)*bucket_size);
-        
+            sort(A + i * bucket_size, A + (i + 1) * bucket_size);
     }
     t1.stop();
     cout << "Split:        " << t1.get_total() << endl;
-    //for (int i = 0;i<n;i++) cout<< A[i]<<" "; cout<<endl;
-    
-    
+    // for (int i = 0;i<n;i++) cout<< A[i]<<" "; cout<<endl;
+
     //---------------------Step 2--------------------
-    timer t2; t2.start();
+    timer t2;
+    t2.start();
     int logn = log2_up(n);
     int random_pick = logn * bucket_quotient * buckets;
-            //-------Randomly Pick cRootnLogn samples
-    cilk_for (int i = 0;i<random_pick;i++)
-        Pick[i] = A[hash32(i)%n]; 
-              //for (int i = 0;i<random_pick;i++) cout<<Pick[i]<<" "; cout<<"\n";
-    sort(Pick, Pick+random_pick);
-            //-------Randomly Pick every cLogn samples
-    //for (int i = 0, j=0; j<buckets-1;  j++,i+=bucket_quotient * logn)
-      //  Sample[j] = Pick[i];
+    //-------Randomly Pick cRootnLogn samples
+    cilk_for(int i = 0; i < random_pick; i++) Pick[i] = A[hash32(i) % n];
+    // for (int i = 0;i<random_pick;i++) cout<<Pick[i]<<" "; cout<<"\n";
+    sort(Pick, Pick + random_pick);
+    //-------Randomly Pick every cLogn samples
+    // for (int i = 0, j=0; j<buckets-1;  j++,i+=bucket_quotient * logn)
+    //  Sample[j] = Pick[i];
     int interval = bucket_quotient * logn;
-    for (int i = 0; i < buckets - 1; i++ )
-        Sample[i] = Pick[i*interval];
-    //sort(Sample, Sample+buckets-1);
-    Sample[buckets - 1] = INT_MAX;      //for (int i = 0; i < buckets; i++) cout<< Sample[i]<<" "; cout<<"\n";
+    for (int i = 0; i < buckets - 1; i++)
+        Sample[i] = Pick[i * interval];
+    // sort(Sample, Sample+buckets-1);
+    Sample[buckets - 1] = INT_MAX; // for (int i = 0; i < buckets; i++) cout<<
+                                   // Sample[i]<<" "; cout<<"\n";
     t2.stop();
     cout << "Pivot:        " << t2.get_total() << endl;
 
-    //Step 3
+    // Step 3
     //-----------------Step 3_1--------------------
-        //First, get the count for each subarray in each bucket. I store them in C
-    timer t3_1; t3_1.start();
-    cilk_for (int i = 0; i < buckets; i++){
-        //cout<<"-----------Bucket "<<i/buckets<<"------------------\n"; for (int j = i;j<i+buckets;j++) cout<<A[j]<<" "; cout<<"\n";
-        
-        if (i == buckets-1) 
-            Merge(A+i*bucket_size, n-i*bucket_size ,C+i*buckets,0,buckets-1);
-        else
-            Merge(A+i*bucket_size, bucket_size ,C+i*buckets,0,buckets-1);
-        //for (int j = i;j<i+buckets;j++) cout<<C[j]<<" "; cout<<"\n";
+    // First, get the count for each subarray in each bucket. I store them in C
+    timer t3_1;
+    t3_1.start();
+    cilk_for(int i = 0; i < buckets; i++) {
+        // cout<<"-----------Bucket "<<i/buckets<<"------------------\n"; for
+        // (int j = i;j<i+buckets;j++) cout<<A[j]<<" "; cout<<"\n";
+
+        //if (i == buckets - 1)
+            Merge(A + i * bucket_size, n - i * bucket_size, C + i * buckets, 0,
+                  buckets - 1);
+        //else
+          //  Merge(A + i * bucket_size, bucket_size, C + i * buckets, 0,
+            //      buckets - 1);
+        // for (int j = i;j<i+buckets;j++) cout<<C[j]<<" "; cout<<"\n";
     }
-    cilk_for (int i = 0; i<buckets;i++)
-            D[i] = C[i];
+    cilk_for(int i = 0; i < buckets; i++) D[i] = C[i];
     t3_1.stop();
     cout << "Merge:        " << t3_1.get_total() << endl;
 
-    //-----------------Step 3_2--------------------    
-        //Then, transpose the array     
-    //for (int i = 0; i < buckets*buckets; i++) if ((i+1)%buckets == 0) cout<< C[i]<<"\n"; else cout<< C[i]<<" "; cout<<"\n";
-    timer t3_2; t3_2.start();
-    Transpose(C,buckets,0,buckets,0,buckets);
+    //-----------------Step 3_2--------------------
+    // Then, transpose the array
+    // for (int i = 0; i < buckets*buckets; i++) if ((i+1)%buckets == 0) cout<<
+    // C[i]<<"\n"; else cout<< C[i]<<" "; cout<<"\n";
+    timer t3_2;
+    t3_2.start();
+    Transpose(C, buckets, 0, buckets, 0, buckets);
     t3_2.stop();
     cout << "Transpose:    " << t3_2.get_total() << endl;
-    //for (int i = 0; i < buckets*buckets; i++) if ((i+1)%buckets == 0) cout<< C[i]<<"\n"; else cout<< C[i]<<" "; cout<<"\n";
-    
+    // for (int i = 0; i < buckets*buckets; i++) if ((i+1)%buckets == 0) cout<<
+    // C[i]<<"\n"; else cout<< C[i]<<" "; cout<<"\n";
+
     //-----------------Step 3_3--------------------
-        //scan to compute the offsets
-    timer t3_3; t3_3.start();
+    // scan to compute the offsets
+    timer t3_3;
+    t3_3.start();
     InsertPointer[0] = Offset[0] = 0;
-    for (int i = 1; i<buckets; i++)
-        InsertPointer[i] = Offset[i] = reduce(C+(i-1)*buckets,buckets)+Offset[i-1];
+    for (int i = 1; i < buckets; i++)
+        InsertPointer[i] = Offset[i] =
+            reduce(C + (i - 1) * buckets, buckets) + Offset[i - 1];
     t3_3.stop();
     cout << "Scan:         " << t3_3.get_total() << endl;
-    //for (int i = 0; i<buckets; i++) cout<<InsertPointer[i]<<" "; cout<<"\n";
+    // for (int i = 0; i<buckets; i++) cout<<InsertPointer[i]<<" "; cout<<"\n";
 
-    //-----------------Step 3_4-------------------- 
-        //Lastly, move each element to the corresponding bucket
-    timer t3_4; t3_4.start();        
-    for (int i = 0; i<buckets; i++){
-        if (i == buckets-1)
-            Move(A+i*bucket_size, B, n-i*bucket_size, D+i*buckets, buckets);
+    //-----------------Step 3_4--------------------
+    // Lastly, move each element to the corresponding bucket
+    timer t3_4;
+    t3_4.start();
+    for (int i = 0; i < buckets; i++) {
+        if (i == buckets - 1)
+            Move(A + i * bucket_size, B, n - i * bucket_size, D + i * buckets,
+                 buckets);
         else
-            Move(A+i*bucket_size, B, bucket_size, D+i*buckets, buckets);
+            Move(A + i * bucket_size, B, bucket_size, D + i * buckets, buckets);
     }
     t3_4.stop();
     cout << "Distribution: " << t3_4.get_total() << endl;
 
     //-----------------Step 4--------------------
-    timer t4; t4.start();
-    cilk_for (int i = 0; i<buckets; i++){
-        if (i == buckets-1)
-            sort(B+Offset[i],B+n);
+    timer t4;
+    t4.start();
+    cilk_for(int i = 0; i < buckets; i++) {
+        if (i == buckets - 1)
+            sort(B + Offset[i], B + n);
         else
-            sort(B+Offset[i],B+Offset[i+1]);
+            sort(B + Offset[i], B + Offset[i + 1]);
     }
     t4.stop();
     cout << "Sort Buckets: " << t4.get_total() << endl;
 }
 
-int main(int argc, char** argv) {
-	if (argc < 3) {
-		cout << "Usage: ./reduce [num_elements] [distribution]" << endl;
-		return 0;
-	}
-	int n = atoi(argv[1]);
-	int* A = new int[n];
-    int* B = new int[n];
-    int* C = new int[n];
-    int* D = new int[n];
+int main(int argc, char **argv) {
+    if (argc < 3) {
+        cout << "Usage: ./reduce [num_elements] [distribution]" << endl;
+        return 0;
+    }
+    int n = atoi(argv[1]);
+    int *A = new int[n];
+    int *B = new int[n];
+    int *C = new int[n];
+    int *D = new int[n];
     int distribution = atoi(argv[2]);
     if (distribution == 1)
-        random(A,n);
-    else if (distribution ==2)
-        almostsort(A,n);
-    else if (distribution ==3)
-        zipfan(A,n);
-    else if (distribution ==4)
-        fewuniq(A,n);
-    else if (distribution ==5)
-        exp(A,n);
-    else if (distribution ==6)
-        normal(A,n);
-    memset(C,0,sizeof(C));
-	//cilk_for (int i = 0; i < n; i++) A[i] = n-i;
-    //Verification(A,n);
+        random(A, n);
+    else if (distribution == 2)
+        almostsort(A, n);
+    else if (distribution == 3)
+        zipfan(A, n);
+    else if (distribution == 4)
+        fewuniq(A, n);
+    else if (distribution == 5)
+        exp(A, n);
+    else if (distribution == 6)
+        normal(A, n);
+    memset(C, 0, sizeof(C));
+    // cilk_for (int i = 0; i < n; i++) A[i] = n-i;
+    // Verification(A,n);
     cout << "Data Generation is Complete, Start Sorting and Timing!\n";
-	timer t; t.start();
-    
-    Sample_Sort(A,B,C,D,n);
-	t.stop();
-	cout << "\nTotal Time:   " << t.get_total() << "\nStarting Verification Now!\n";
-	if (Verification(B,n))  cout<<"The result is correct!" << endl; else cout<<"The result is incorrect!" << endl;
-	
+    timer t;
+    t.start();
+
+    Sample_Sort(A, B, C, D, n);
+    t.stop();
+    cout << "\nTotal Time:   " << t.get_total()
+         << "\nStarting Verification Now!\n";
+    if (Verification(B, n))
+        cout << "The result is correct!" << endl;
+    else
+        cout << "The result is incorrect!" << endl;
+
     return 0;
 }
