@@ -253,7 +253,7 @@ void Sample_Sort(int *A, int *B, int *C, int *D, int n) {
                   buckets - 1);
         // for (int j = i;j<i+buckets;j++) cout<<C[j]<<" "; cout<<"\n";
     }
-    //cilk_for(int i = 0; i < buckets; i++) D[i] = C[i];
+    cilk_for(int i = 0; i < buckets; i++) D[i] = C[i];
     t3_1.stop();
     cout << "Merge:        " << t3_1.get_total() << endl;
 
