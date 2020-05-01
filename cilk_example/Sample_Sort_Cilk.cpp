@@ -188,9 +188,9 @@ void Sample_Sort(int* A, int* B, int* C, int* D, int n){
     timer t1; t1.start();
     cilk_for (int i = 0; i<buckets; i++){
         //if (i == buckets - 1)
-            sort(A+(buckets-1)*bucket_size,A+n);
+        //    sort(A+(buckets-1)*bucket_size,A+n);
         //else
-          //  sort(A+i*bucket_size,A+(i+1)*bucket_size);
+            sort(A+i*bucket_size,A+(i+1)*bucket_size);
         
     }
     t1.stop();
