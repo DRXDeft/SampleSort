@@ -28,7 +28,7 @@ inline uint32_t hash32(uint32_t a) {
 	return a;
 }
 void random(int *A, int n) {
-    cilk_for(int i = 0; i < n; i++) A[i] = (hash32(i)) % (n * 2);
+    cilk_for(int i = 0; i < n; i++) A[i] = (hash32(i)) % (n * 3);
 }
 void almostsort(int *A, int n) {
     cilk_for(int i = 0; i < n / 2; i++) { A[i] = i + 1; }
