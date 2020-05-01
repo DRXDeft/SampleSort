@@ -342,7 +342,7 @@ int main(int argc, char** argv) {
         exp(A,n);
     else if (distribution ==6)
         normal(A,n);
-    for (int i = 0; i < n; i++) C[i] = 0;
+    memset(C,0,sizeof(C));
 	//cilk_for (int i = 0; i < n; i++) A[i] = n-i;
     //Verification(A,n);
     cout << "Data Generation is Complete, Start Sorting and Timing!\n";
