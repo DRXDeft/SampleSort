@@ -187,9 +187,9 @@ void Sample_Sort(int* A, int* B, int* C, int* D, int n){
     //--------------------Step 1--------------------
     timer t1; t1.start();
     cilk_for (int i = 0; i<buckets; i++){
-        //if (i == buckets - 1)
-        //    sort(A+(buckets-1)*bucket_size,A+n);
-        //else
+        if (i == buckets - 1)
+            sort(A+(buckets-1)*bucket_size,A+n);
+        else
             sort(A+i*bucket_size,A+(i+1)*bucket_size);
         
     }
@@ -201,7 +201,7 @@ void Sample_Sort(int* A, int* B, int* C, int* D, int n){
     //---------------------Step 2--------------------
     timer t2; t2.start();
     int logn = log2_up(n);
-    int random_pick = logn * bucket_quotient * buckets;
+    int random_pick = buckets-1//logn * bucket_quotient * buckets;
             //-------Randomly Pick cRootnLogn samples
     cilk_for (int i = 0;i<random_pick;i++)
         Pick[i] = A[hash32(i)%n]; 
