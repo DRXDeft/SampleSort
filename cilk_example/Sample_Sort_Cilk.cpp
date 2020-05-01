@@ -127,7 +127,7 @@ bool Verification(int* A, int n){
         if (A[i]>A[i+1])    return false;
     return true;
 }
-void Merge(int* A, int n, int* C, int m){
+void Merg_(int* A, int n, int* C, int m){
     int i=0,j=0;
     while( i<n || j<m){
         while ( j<m && A[i]>Sample[j]) {j++;}//cout<<i<<" "<<j<<"\n";};
@@ -137,6 +137,20 @@ void Merge(int* A, int n, int* C, int m){
         if (i==n)   return;
     }
 }
+void Merge(int* A, int n, int* C, int m) {
+    int i=0, j=0;
+    while (i<n && j<m){
+        if (A[i]<=Sample[j]){
+            i++;
+            C[j]++;
+        }      
+        else
+        {
+            j++;
+        }
+    }
+}
+
 int reduce(int* A, int n) {
 	if (n < THRESHOLD_OF_REDUCE) {
       int ret = 0;
