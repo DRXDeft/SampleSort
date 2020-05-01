@@ -128,15 +128,16 @@ bool Verification(int* A, int n){
     return true;
 }
 int binary_search(int* A, int start, int end, int k){
+    int p;
     if (start == end)
         return start;
     int mid = (start+end)/2;
     if (A[mid]>k)
         return binary_search(A,start,mid-1, k);
+    else if (A[mid]<=k &&  A[mid+1]>k )
+        return mid;
     else
-        return binary_search(A,mid,start,k);
-    
-    
+        return binary_search(A,mid+1,end,k);
 }
 void Merge(int* A, int n, int* C, int start, int end) {
     if (n == 0)
@@ -150,11 +151,9 @@ void Merge(int* A, int n, int* C, int start, int end) {
         Merge(A,n,C,midm+1,end);
     else{
         int midn = binary_search(A,0,n-1,Sample[midm]);
-        cilk_spawn Merge(A,midn,C,start,midm);
-        Merge(A+midn, n-midn, C,midm+1,end);
-        cilk_sync;
+        Merge(A,midn+1,C,start,midm);
+        Merge(A+midn+1, n-midn-1, C,midm+1,end);
     }
-    
 }
 
 int reduce(int* A, int n) {
