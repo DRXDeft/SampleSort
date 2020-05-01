@@ -251,7 +251,7 @@ void Sample_Sort(int* A, int* B, int* C, int* D, int n){
     //for (int i = 0, j=0; j<buckets-1;  j++,i+=bucket_quotient * logn)
       //  Sample[j] = Pick[i];
     int interval = bucket_quotient * logn;
-    cilk_for (int i = 0; i < buckets - 1; i++ )
+    for (int i = 0; i < buckets - 1; i++ )
         Sample[i] = Pick[i*interval];
     //sort(Sample, Sample+buckets-1);
     Sample[buckets - 1] = INT_MAX;      //for (int i = 0; i < buckets; i++) cout<< Sample[i]<<" "; cout<<"\n";
