@@ -206,13 +206,14 @@ void Sample_Sort(int* A, int* B, int* C, int* D, int n){
     cilk_for (int i = 0;i<random_pick;i++)
         Pick[i] = A[hash32(i)%n]; 
               //for (int i = 0;i<random_pick;i++) cout<<Pick[i]<<" "; cout<<"\n";
-    sort(Pick, Pick+random_pick);
+    //sort(Pick, Pick+random_pick);
             //-------Randomly Pick every cLogn samples
     //for (int i = 0, j=0; j<buckets-1;  j++,i+=bucket_quotient * logn)
       //  Sample[j] = Pick[i];
     int interval = bucket_quotient * logn;
     cilk_for (int i = 0; i < buckets - 1; i++ )
         Sample[i] = Pick[i*interval];
+    sort(Sample, Sample+buckets-1);
     Sample[buckets - 1] = INT_MAX;      //for (int i = 0; i < buckets; i++) cout<< Sample[i]<<" "; cout<<"\n";
     t2.stop();
     cout << "Pivot:        " << t2.get_total() << endl;
