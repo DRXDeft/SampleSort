@@ -287,7 +287,7 @@ void Sample_Sort(int *A, int *B, int *C, int *D, int n) {
     // Lastly, move each element to the corresponding bucket
     timer t3_4;
     t3_4.start();
-    for (int i = 0; i < buckets; i++){
+    cilk_for (int i = 0; i < buckets; i++){
         int End;
         if (i == buckets - 1)
             End = n;
