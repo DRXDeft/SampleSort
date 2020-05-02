@@ -312,12 +312,12 @@ void Sample_Sort(int *A, int *B, int *C, int *D, int n) {
             int number = C[j * buckets + i];
             int pointer;    //pointer of the start location of Sample[j] in Bucket i
             if (number){
-                if (i == buckets-1)
+                /*if (i == buckets-1)
                     pointer = binary_search(A,i * bucket_size,n-1,Sample[j]);
                 else
-                    pointer = binary_search(A,i * bucket_size, (i+1) * bucket_size-1, Sample[j]);
-                pointer= pointer - number +1;
-                cilk_for (int k = 0; k<number; k++)
+                    pointer = binary_search(A,i * bucket_size, (i+1) * bucket_size-1, Sample[j]);*/
+                pointer=  number +1;
+                for (int k = 0; k<number; k++)
                     B[InsertPointer[j]+k] = A[pointer + k];
                 InsertPointer[j]+=number; 
             }
