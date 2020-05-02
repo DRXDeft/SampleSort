@@ -1,7 +1,7 @@
 CC = g++
 CFLAGS = -O2 -I../c++ -mcx16 -march=native -DCILK -fcilkplus -std=c++11
 
-all:	Sample_Sort
+all:	Sample_Sort reduce
 
 reduce:	reduce.cpp
 	$(CC) $(CFLAGS) -DNDEBUG reduce.cpp -o reduce
@@ -13,4 +13,4 @@ qsort:	quicksort.cpp qsort.h
 Sample_Sort: Sample_Sort_Cilk.cpp
 	$(CC) $(CFLAGS) -DNDEBUG Sample_Sort_Cilk.cpp -o Sample_Sort
 clean:
-	rm -f Sample_Sort
+	rm -f Sample_Sort reduce
