@@ -117,19 +117,6 @@ void zipfan(int *List, int n) {
             List[i]++;
     }
 }
-int reduce(int* A, int n) {
-	if (n < 1000) {
-      int ret = 0;
-      for (int i = 0; i < n; i++) ret += A[i];
-      return ret;
-    }
-	int L, R;
-	L = cilk_spawn reduce(A, n/2);
-	R = reduce(A+n/2, n-n/2);
-	cilk_sync;
-    //L = reduce(A, n/2); R = reduce(A+n/2, n-n/2);
-	return L+R;
-}
 int log2_up(int k) {
     int a = 0;
     while (k) {
@@ -285,15 +272,8 @@ void Sample_Sort(int *A, int *B, int *C, int *D, int n) {
     // scan to compute the offsets
     timer t3_3;
     t3_3.start();
-    //Scan(C,D,InsertPointer,Offset,buckets*buckets);
-    Offset[0] = 0;
-    cilk_for (int i = 1; i<buckets; i++)
-        Offset[i] = reduce(C+(i-1)*buckets,buckets);
-    for (int i = 1; i<buckets; i++)
-        Offset[i]+=Offset[i-1];
-    for (int i = 0; i<buckets; i++)
-        InsertPointer[i] = Offset[i];
-    t3_3.stop();
+    Scan(C,D,InsertPointer,Offset,buckets*buckets);
+    cilk_for (int i = 0; i < buckets * buckets; i++) D[i] -= C[i];
     cout << "Scan:         " << t3_3.get_total() << endl;
     // for (int i = 0; i<buckets; i++) cout<<InsertPointer[i]<<" "; cout<<"\n";
 
@@ -301,25 +281,18 @@ void Sample_Sort(int *A, int *B, int *C, int *D, int n) {
     // Lastly, move each element to the corresponding bucket
     timer t3_4;
     t3_4.start();
-    for (int i = 0; i < buckets; i++){
+    cilk_for (int i = 0; i < buckets; i++){
         int End;
         if (i == buckets - 1)
             End = n;
         else 
             End = bucket_size * (i+1);
-        int start = i * buckets;
-        cilk_for (int j = 0; j<buckets;j++){
-            int number = C[j * buckets + i];
-            int pointer;    //pointer of the start location of Sample[j] in Bucket i
-            if (number){
-                /*if (i == buckets-1)
-                    pointer = binary_search(A,i * bucket_size,n-1,Sample[j]);
-                else
-                    pointer = binary_search(A,i * bucket_size, (i+1) * bucket_size-1, Sample[j]);*/
-                pointer=  number +1;
-                for (int k = 0; k<number; k++)
-                    B[InsertPointer[j]+k] = A[pointer + k];
-                InsertPointer[j]+=number; 
+        int pivot = 0, j = i * bucket_size;
+        while (pivot < buckets && j < End){
+            while (A[j] > Sample[pivot]) pivot++;
+            int tmp = pivot*buckets+i;
+            while (j<End && A[j] <= Sample[pivot]){
+                B[D[tmp]++] = A[j++]; 
             }
         }
     }
@@ -330,10 +303,10 @@ void Sample_Sort(int *A, int *B, int *C, int *D, int n) {
     timer t4;
     t4.start();
     cilk_for(int i = 0; i < buckets; i++) {
-        if (i == buckets-1)
-            sort(B+Offset[i],B+n);
+         if (i == buckets-1)
+            sort(B+(D[i*buckets]-C[i*buckets]),B+n);
         else
-            sort(B+Offset[i],B+Offset[i+1]);
+            sort(B+(D[i*buckets]-C[i*buckets]),B+D[(i+1)*buckets]-C[(i+1)*buckets]);
     }
     t4.stop();
     cout << "Sort Buckets: " << t4.get_total() << endl;
