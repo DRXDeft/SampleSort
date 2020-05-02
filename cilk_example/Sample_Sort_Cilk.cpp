@@ -285,15 +285,15 @@ void Sample_Sort(int *A, int *B, int *C, int *D, int n) {
     // scan to compute the offsets
     timer t3_3;
     t3_3.start();
-    //cilk_for (int i = 0; i< buckets; i++)
-      //  Scan(C,D,InsertPointer,Offset,buckets);
     //Scan(C,D,InsertPointer,Offset,buckets*buckets);
     Offset[0] = 0;
     cilk_for (int i = 1; i<buckets; i++)
         Offset[i] = reduce(C+(i-1)*buckets,buckets);
     for (int i = 1; i<buckets; i++)
         Offset[i]+=Offset[i-1];
-    cilk_for (int i = 0; i < buckets * buckets; i++) D[i] -= C[i];
+    for (int i = 0; i<buckets; i++)
+        InsertPointer[i] = Offset[i];
+    t3_3.stop();
     cout << "Scan:         " << t3_3.get_total() << endl;
     // for (int i = 0; i<buckets; i++) cout<<InsertPointer[i]<<" "; cout<<"\n";
 
@@ -301,18 +301,25 @@ void Sample_Sort(int *A, int *B, int *C, int *D, int n) {
     // Lastly, move each element to the corresponding bucket
     timer t3_4;
     t3_4.start();
-    cilk_for (int i = 0; i < buckets; i++){
+    for (int i = 0; i < buckets; i++){
         int End;
         if (i == buckets - 1)
             End = n;
         else 
             End = bucket_size * (i+1);
-        int pivot = 0, j = i * bucket_size;
-        while (pivot < buckets && j < End){
-            while (A[j] > Sample[pivot]) pivot++;
-            int tmp = pivot*buckets+i;
-            while (j<End && A[j] <= Sample[pivot]){
-                B[D[tmp]++] = A[j++]; 
+        int start = i * buckets;
+        cilk_for (int j = 0; j<buckets;j++){
+            int number = C[j * buckets + i];
+            int pointer;    //pointer of the start location of Sample[j] in Bucket i
+            if (number){
+                if (i == buckets-1)
+                    pointer = binary_search(A,i * bucket_size,n-1,Sample[j]);
+                else
+                    pointer = binary_search(A,i * bucket_size, (i+1) * bucket_size-1, Sample[j]);
+                pointer= pointer - number +1;
+                for (int k = 0; k<number; k++)
+                    B[InsertPointer[j]+k] = A[pointer + k];
+                InsertPointer[j]+=number; 
             }
         }
     }
