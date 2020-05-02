@@ -317,7 +317,7 @@ void Sample_Sort(int *A, int *B, int *C, int *D, int n) {
                 else
                     pointer = binary_search(A,i * bucket_size, (i+1) * bucket_size-1, Sample[j]);
                 pointer= pointer - number +1;
-                for (int k = 0; k<number; k++)
+                cilk_for (int k = 0; k<number; k++)
                     B[InsertPointer[j]+k] = A[pointer + k];
                 InsertPointer[j]+=number; 
             }
