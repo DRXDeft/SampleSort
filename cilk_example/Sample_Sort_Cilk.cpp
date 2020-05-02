@@ -164,13 +164,13 @@ void Scan(int* In, int* Out, int* B, int* C, int n) {
         return;
     }
 	
-	for(int i = 0; i < n/2; i++) 
+	cilk_for(int i = 0; i < n/2; i++) 
 		B[i] = In[2*i] + In[2*i+1];
 	
 	Scan(B, C, B+n/2, C+n/2, n/2);	
 	Out[0] = In[0];
 	
-	for(int i = 1; i < n; i++) {
+	cilk_for(int i = 1; i < n; i++) {
 		if (i%2) Out[i] = C[i/2];
 		else Out[i] = C[i/2-1] + In[i];
 	}
@@ -278,7 +278,7 @@ void Sample_Sort(int *A, int *B, int *C, int *D, int n) {
     // scan to compute the offsets
     timer t3_3;
     t3_3.start();
-    Scan(C,D,InsertPointer,Offset,buckets*buckets);
+    //Scan(C,D,InsertPointer,Offset,buckets*buckets);
     cilk_for (int i = 0; i < buckets * buckets; i++) D[i] -= C[i];
     cout << "Scan:         " << t3_3.get_total() << endl;
     // for (int i = 0; i<buckets; i++) cout<<InsertPointer[i]<<" "; cout<<"\n";
