@@ -14,7 +14,7 @@
 using namespace std;
 #define THRESHOLD_OF_TRANSPOSE 1000
 #define THRESHOLD_OF_DISTRIBUTION 100
-#define THRESHOLD_OF_REDUCE 1000
+#define THRESHOLD_OF_SCAN 500
 #define THRESHOLD_OF_MERGE 500
 int Pick[10000000], Sample[100001], Offset[100001], InsertPointer[100001];
 inline uint32_t hash32(uint32_t a) {
@@ -155,19 +155,25 @@ void Merge(int *A, int n, int *C, int start, int end) {
     }
 }
 
-int reduce(int *A, int n) {
-    if (n < THRESHOLD_OF_REDUCE) {
-        int ret = 0;
-        for (int i = 0; i < n; i++)
-            ret += A[i];
-        return ret;
+void Scan(int* In, int* Out, int* B, int* C, int n) {
+	if (n==0) return;
+    if (n < THRESHOLD_OF_SCAN){
+        Out[0] = In[0];
+        for (int i = 1; i<n;i++)
+            Out[i] = Out[i-1] + In[i];
+        return;
     }
-    int L, R;
-    L = cilk_spawn reduce(A, n / 2);
-    R = reduce(A + n / 2, n - n / 2);
-    cilk_sync;
-
-    return L + R;
+	
+	for(int i = 0; i < n/2; i++) 
+		B[i] = In[2*i] + In[2*i+1];
+	
+	Scan(B, C, B+n/2, C+n/2, n/2);	
+	Out[0] = In[0];
+	
+	for(int i = 1; i < n; i++) {
+		if (i%2) Out[i] = C[i/2];
+		else Out[i] = C[i/2-1] + In[i];
+	}
 }
 void Move(int *A, int *B, int bucket_size, int *D, int buckets) {
     for (int i = 0, p = 0; i < buckets; i++) {
@@ -253,7 +259,6 @@ void Sample_Sort(int *A, int *B, int *C, int *D, int n) {
                   buckets - 1);
         // for (int j = i;j<i+buckets;j++) cout<<C[j]<<" "; cout<<"\n";
     }
-    cilk_for(int i = 0; i < buckets*buckets; i++) D[i] = C[i];
     t3_1.stop();
     cout << "Merge:        " << t3_1.get_total() << endl;
 
@@ -273,11 +278,8 @@ void Sample_Sort(int *A, int *B, int *C, int *D, int n) {
     // scan to compute the offsets
     timer t3_3;
     t3_3.start();
-    InsertPointer[0] = Offset[0] = 0;
-    for (int i = 1; i < buckets; i++)
-        InsertPointer[i] = Offset[i] =
-            reduce(C + (i - 1) * buckets, buckets) + Offset[i - 1];
-    t3_3.stop();
+    Scan(C,D,InsertPointer,Offset,buckets*buckets);
+    cilk_for (int i = 0; i < buckets * buckets; i++) D[i] -= C[i];
     cout << "Scan:         " << t3_3.get_total() << endl;
     // for (int i = 0; i<buckets; i++) cout<<InsertPointer[i]<<" "; cout<<"\n";
 
@@ -285,12 +287,19 @@ void Sample_Sort(int *A, int *B, int *C, int *D, int n) {
     // Lastly, move each element to the corresponding bucket
     timer t3_4;
     t3_4.start();
-    for (int i = 0; i < buckets; i++) {
+    for (int i = 0; i < buckets; i++){
+        int End;
         if (i == buckets - 1)
-            Move(A + i * bucket_size, B, n - i * bucket_size, D + i * buckets,
-                 buckets);
-        else
-            Move(A + i * bucket_size, B, bucket_size, D + i * buckets, buckets);
+            End = n;
+        else 
+            End = bucket_size * (i+1);
+        int pivot = 0, j = i * bucket_size;
+        while (pivot < buckets && j < End){
+            while (A[j] > Sample[pivot]) pivot++;
+            while (j<End && A[j] <= Sample[pivot]){
+                B[D[pivot*buckets+i]++] = A[j++]; 
+            }
+        }
     }
     t3_4.stop();
     cout << "Distribution: " << t3_4.get_total() << endl;
@@ -299,10 +308,10 @@ void Sample_Sort(int *A, int *B, int *C, int *D, int n) {
     timer t4;
     t4.start();
     cilk_for(int i = 0; i < buckets; i++) {
-        if (i == buckets - 1)
-            sort(B + Offset[i], B + n);
+         if (i == buckets-1)
+            sort(B+(D[i*buckets]-C[i*buckets]),B+n);
         else
-            sort(B + Offset[i], B + Offset[i + 1]);
+            sort(B+(D[i*buckets]-C[i*buckets]),B+D[(i+1)*buckets]-C[(i+1)*buckets]);
     }
     t4.stop();
     cout << "Sort Buckets: " << t4.get_total() << endl;
@@ -310,7 +319,7 @@ void Sample_Sort(int *A, int *B, int *C, int *D, int n) {
 
 int main(int argc, char **argv) {
     if (argc < 3) {
-        cout << "Usage: ./reduce [num_elements] [distribution]" << endl;
+        cout << "Usage: ./Sample_Sort_Cilk [num_elements] [distribution]" << endl;
         return 0;
     }
     int n = atoi(argv[1]);
@@ -332,6 +341,7 @@ int main(int argc, char **argv) {
     else if (distribution == 6)
         normal(A, n);
     memset(C, 0, sizeof(C));
+    memset(D, 0, sizeof(D));
     // cilk_for (int i = 0; i < n; i++) A[i] = n-i;
     // Verification(A,n);
     cout << "Data Generation is Complete, Start Sorting and Timing!\n";
