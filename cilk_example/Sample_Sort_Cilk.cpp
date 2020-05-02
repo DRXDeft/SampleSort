@@ -296,8 +296,9 @@ void Sample_Sort(int *A, int *B, int *C, int *D, int n) {
         int pivot = 0, j = i * bucket_size;
         while (pivot < buckets && j < End){
             while (A[j] > Sample[pivot]) pivot++;
+            int tmp = pivot*buckets+i;
             while (j<End && A[j] <= Sample[pivot]){
-                B[D[pivot*buckets+i]++] = A[j++]; 
+                B[D[tmp]++] = A[j++]; 
             }
         }
     }
