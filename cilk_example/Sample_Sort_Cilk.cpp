@@ -330,10 +330,10 @@ void Sample_Sort(int *A, int *B, int *C, int *D, int n) {
     timer t4;
     t4.start();
     cilk_for(int i = 0; i < buckets; i++) {
-         if (i == buckets-1)
-            sort(B+(D[i*buckets]-C[i*buckets]),B+n);
+        if (i == buckets-1)
+            sort(B+Offset[i],B+n);
         else
-            sort(B+(D[i*buckets]-C[i*buckets]),B+D[(i+1)*buckets]-C[(i+1)*buckets]);
+            sort(B+Offset[i],B+Offset[i+1]);
     }
     t4.stop();
     cout << "Sort Buckets: " << t4.get_total() << endl;
