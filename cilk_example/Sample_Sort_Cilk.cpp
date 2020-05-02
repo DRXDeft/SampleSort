@@ -272,7 +272,9 @@ void Sample_Sort(int *A, int *B, int *C, int *D, int n) {
     // scan to compute the offsets
     timer t3_3;
     t3_3.start();
-    Scan(C,D,InsertPointer,Offset,buckets*buckets);
+    cilk_for (int i = 0; i< buckets; i++)
+        Scan(C,D,InsertPointer,Offset,buckets);
+    //Scan(C,D,InsertPointer,Offset,buckets*buckets);
     cilk_for (int i = 0; i < buckets * buckets; i++) D[i] -= C[i];
     cout << "Scan:         " << t3_3.get_total() << endl;
     // for (int i = 0; i<buckets; i++) cout<<InsertPointer[i]<<" "; cout<<"\n";
@@ -335,6 +337,7 @@ int main(int argc, char **argv) {
         exp(A, n);
     else if (distribution == 6)
         normal(A, n);
+    memset(B, 0, sizeof(B));    
     memset(C, 0, sizeof(C));
     memset(D, 0, sizeof(D));
     // cilk_for (int i = 0; i < n; i++) A[i] = n-i;
