@@ -117,6 +117,19 @@ void zipfan(int *List, int n) {
             List[i]++;
     }
 }
+int reduce(int* A, int n) {
+	if (n < 1000) {
+      int ret = 0;
+      for (int i = 0; i < n; i++) ret += A[i];
+      return ret;
+    }
+	int L, R;
+	L = cilk_spawn reduce(A, n/2);
+	R = reduce(A+n/2, n-n/2);
+	cilk_sync;
+    //L = reduce(A, n/2); R = reduce(A+n/2, n-n/2);
+	return L+R;
+}
 int log2_up(int k) {
     int a = 0;
     while (k) {
@@ -274,7 +287,12 @@ void Sample_Sort(int *A, int *B, int *C, int *D, int n) {
     t3_3.start();
     //cilk_for (int i = 0; i< buckets; i++)
       //  Scan(C,D,InsertPointer,Offset,buckets);
-    Scan(C,D,InsertPointer,Offset,buckets*buckets);
+    //Scan(C,D,InsertPointer,Offset,buckets*buckets);
+    Offset[0] = 0;
+    cilk_for (int i = 1; i<buckets; i++)
+        Offset[i] = reduce(C+(i-1)*buckets,buckets);
+    for (int i = 1; i<buckets; i++)
+        Offset[i]+=Offset[i-1];
     cilk_for (int i = 0; i < buckets * buckets; i++) D[i] -= C[i];
     cout << "Scan:         " << t3_3.get_total() << endl;
     // for (int i = 0; i<buckets; i++) cout<<InsertPointer[i]<<" "; cout<<"\n";
