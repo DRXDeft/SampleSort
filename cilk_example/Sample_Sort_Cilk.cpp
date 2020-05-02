@@ -14,7 +14,7 @@
 using namespace std;
 #define THRESHOLD_OF_TRANSPOSE 1000
 #define THRESHOLD_OF_DISTRIBUTION 100
-#define THRESHOLD_OF_SCAN 500
+#define THRESHOLD_OF_SCAN 1000
 #define THRESHOLD_OF_MERGE 500
 int Pick[10000000], Sample[100001], Offset[100000001], InsertPointer[100000001];
 inline uint32_t hash32(uint32_t a) {
@@ -174,12 +174,6 @@ void Scan(int* In, int* Out, int* B, int* C, int n) {
 		if (i%2) Out[i] = C[i/2];
 		else Out[i] = C[i/2-1] + In[i];
 	}
-}
-void Move(int *A, int *B, int bucket_size, int *D, int buckets) {
-    for (int i = 0, p = 0; i < buckets; i++) {
-        for (int j = 0; j < D[i]; j++)
-            B[InsertPointer[i]++] = A[p++];
-    }
 }
 void Transpose(int* C, int n, int x, int lx, int y, int ly) {
     if ((lx <= THRESHOLD_OF_TRANSPOSE) && (ly <= THRESHOLD_OF_TRANSPOSE)) {
